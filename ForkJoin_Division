@@ -1,0 +1,48 @@
+//division recursiva
+public class DivTask extends RecursiveTask<Integer> {
+    //ds: divisor i dd: divident
+    private int ds, dd;
+    private static int LLIDAR = 30;
+    //constructor
+    public DivTask(int _dd, int _ds) {
+        ds = _ds;
+        dd = _dd;
+    }
+
+    //restes recursives
+    public Integer divR() {
+        if(ds > dd) return 0;
+        else {
+            DivTask f = new DivTask(dd-ds,ds);
+            f.fork();
+            return f.join() + 1;
+        }
+    }
+
+    //restes iteratives
+    public Integer divS() {
+        int c = 0;
+        while( dd >= ds){
+            dd = dd - ds;
+            c++;
+        }
+        return c;
+    }
+
+    @Override
+    protected Integer compute() {
+        System.out.println(dd + "/" + ds);
+        if(dd-ds > LLIDAR) return divR();
+        else return divS();
+    }
+}
+
+public class Dividir {
+    public static void main(String[] args) {
+        ForkJoinPool pool = new ForkJoinPool();
+        DivTask div = new DivTask(100,12);
+        pool.invoke(div);
+        int res = div.join();
+        System.out.println("Resultat:" + res);
+    }
+}
