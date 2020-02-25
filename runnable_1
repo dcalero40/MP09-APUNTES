@@ -1,0 +1,46 @@
+//buscar numeros primarios de 0 a n*1000
+public class MatematiquesExecutor { 
+  public static void main(String[] args) throws InterruptedException, ExecutionException {
+    //creo el executor
+    ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(4);
+    //calculo de primeros de 1000, 2000 i 3000.
+    for (int i = 0; i < 3; i++) {
+      int inici=(i)*1000;
+      int fi=inici+1000;
+      Primers calculPrimers = new Primers(inici,fi);
+      System.out.println(inici+"--"+fi);
+      executor.execute(calculPrimers);
+    }
+    executor.shutdown();
+  }
+}
+ 
+class Primers implements Runnable {
+  private int inici,fi;
+  //constructor
+  public Primers(int inici,int fi) {
+    this.inici = inici;
+    this.fi=fi;
+  }
+  
+  //metodo run
+  @Override
+  public void run() {
+    int aux;
+    
+    for(int numAnalitzar=inici;numAnalitzar<fi;numAnalitzar++){
+      boolean esPrimo=true;
+      for(int cont=2;cont<numAnalitzar;cont++){
+        //COMPRUEBA SI ES PRIMO
+        aux=numAnalitzar%cont;
+        if(aux==0){
+          cont=numAnalitzar;
+          esPrimo=false;
+        }
+      }
+      if (esPrimo){
+         System.out.println(numAnalitzar + " és primer.");
+      }
+    }
+  } 
+}
