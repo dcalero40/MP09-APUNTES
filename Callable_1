@@ -1,0 +1,51 @@
+//programa para buscarf divisibles entre 2 y 3 del 1 al 100.
+public class MatematiquesExecutor {
+
+  static class Divisor implements Callable<Boolean> {
+    private int numero;
+    private int divisor;
+    
+    //constructor
+    public Divisor(int numero,int divisor ) {
+    this.numero = numero;
+    this.divisor = divisor;
+    }
+    
+    @Override
+    public Boolean call() throws Exception {
+      if((numero%divisor)==0) return true;
+      return false;
+    }
+  }
+ 
+  public static void main(String[] args) throws InterruptedException, ExecutionException {
+    //creo executor y listas de tareas
+    ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
+    List<Divisor> llistaTasques2= new ArrayList<Divisor>();
+    List<Divisor> llistaTasques3= new ArrayList<Divisor>();
+    //inicializo listas de tareas
+    for (int i = 0; i < 100; i++) {
+      Divisor calculaDivisor2 = new Divisor(i,2);
+      llistaTasques2.add(calculaDivisor2);
+      Divisor calculaDivisor3 = new Divisor(i,3);
+      llistaTasques3.add(calculaDivisor3);
+    }
+
+    //creo listas de resultados (future) e inicializo
+    List <Future<Boolean>> llistaResultats2;
+    llistaResultats2 = executor.invokeAll(llistaTasques2);
+    List <Future<Boolean>> llistaResultats3;
+    llistaResultats3 = executor.invokeAll(llistaTasques3);
+
+    executor.shutdown();
+    for (int i = 0; i < llistaResultats2.size(); i++) {
+      Future<Boolean> resultat2 = llistaResultats2.get(i);
+      Future<Boolean> resultat3 = llistaResultats3.get(i);
+      try {
+        if (resultat2.get() && resultat3.get()){
+          System.out.println("Número "+i+ " és divisible per 2 i per 3");
+        }
+      } catch (InterruptedException | ExecutionException e) {}
+    }
+  }
+}
