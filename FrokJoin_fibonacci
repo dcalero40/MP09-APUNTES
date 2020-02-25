@@ -34,5 +34,19 @@ public class FibonacciTask extends RecursiveTask<Long> {
 			return fibonacciRecusion(Num);
 		}
 	}
+}
 
+
+public class Fibonacci {
+	public Fibonacci() {}
+	public static void main(String[] args) {
+		int n=4;
+		// Mira el número de processadors
+		ForkJoinPool pool = new ForkJoinPool();
+		FibonacciTask tasca = new FibonacciTask(n);
+		// crida la tasca i espera que es completin
+		long result1 = pool.invoke(tasca);
+		long result = tasca.join();
+		System.out.println("Resultat: " + result);
+	}
 }
