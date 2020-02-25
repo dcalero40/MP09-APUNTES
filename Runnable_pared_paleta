@@ -1,0 +1,42 @@
+public class FerParetC {
+	public static void main(String[] args) throws InterruptedException {
+		//Definim l'executor dels processos
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+		int numPaletes = 5, numMaons = 10;
+		//instanciem i iniciem els paletes
+		PaletaP[] P = new PaletaP[numPaletes];
+		for (int i=0;i<numPaletes;i++) {
+			P[i] = new PaletaP("Paleta-"+i,numMaons);
+			executor.execute(P[i]);
+		}
+		executor.shutdown();
+		executor.awaitTermination(numMaons, TimeUnit.SECONDS);
+	}
+}
+
+public class PaletaP implements Runnable {
+	private String Nom;
+	int Maons;
+  //constructor
+  public PaletaP(String nom, int maons) {
+		Nom = nom;
+		Maons = maons;
+	}
+  //metode run
+	@Override
+	public void run() {
+		posaMaons(Maons);
+	}
+  //metode que executa el run
+	private void posaMaons(int maons) {
+		//Temps que triga a col·locar els maons entre 1 i 4 segons per cada maó
+		System.out.println(Nom + " posant maons...");
+		try {
+			Thread.sleep((long) ((Math.random()*300)+100)*maons );
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println(Nom + " ha acabat.");
+	}
+	//getters i setters
+}
