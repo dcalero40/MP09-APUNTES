@@ -1,0 +1,61 @@
+public class AlumneP implements Callable<Integer> {
+  private String Nom;
+  //constructor
+	public AlumneP(String nom) {
+		Nom = nom;
+	}
+  //metodo examinar
+	public int Examinar() {
+		//Temps que triga a fer l'examen
+		try {
+			Thread.sleep((long) (Math.random()*2000)+1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		//Nota de l'examen
+		int nota = (int) (Math.random()*10);
+		return nota;
+	}
+  //metodo callable
+  @Override
+	public Integer call() throws Exception {
+		return Examinar();
+	}
+  //insertar getters y setters
+}
+
+public class Examen {
+
+	public static void main(String[] args) throws InterruptedException {
+		//Definim l'executor dels processos
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+		//Definim la llista dels alumnes
+	 	List<AlumneP> llistaAlumnes = new ArrayList<AlumneP>();
+	 	//Nombre d'alumnes i modul del que s'examinen
+	 	int numAlumnes = 10, ti, te;
+	 	String Modul = "M9";
+    
+	 	//Es creen els alumnes i s'afegeixen a la llista per fer l'examen
+	 	for (int i=0;i<numAlumnes;i++) {
+			AlumneP A_m9 = new AlumneP(Modul+"-"+i);
+			llistaAlumnes.add(A_m9);
+	 	}
+	 	
+	 	//es crea la llista de resultats de l'examen
+	 	List <Future<Integer>> llistaResultats;
+	 	//Els alumnes s'examinen
+		llistaResultats = executor.invokeAll(llistaAlumnes);
+		//No deixem examinar a més alumnes
+		executor.shutdown();
+	 	
+		//Ensenyem els resultats i el temps que han trigat
+	 	for (int i = 0; i < llistaResultats.size(); i++) {
+	 		Future<Integer> resultat = llistaResultats.get(i);
+	 		try {
+	 			System.out.println(llistaAlumnes.get(i).getNom() + ": " + resultat.get());
+	 			} catch (InterruptedException | ExecutionException e) {
+	 				e.getStackTrace();
+	 			}
+	 	}
+	}
+}
