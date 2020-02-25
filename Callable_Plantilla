@@ -1,0 +1,47 @@
+public class AlumneP implements Callable<Integer> {
+  //datos
+  //constructor
+  //metodo tarea
+	public void metodoTarea() {
+		//duerme
+    try {
+			Thread.sleep((long) (Math.random()*2000)+1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    //hace algo
+ 	}
+  //metodo callable
+  @Override
+	public Integer call() throws Exception {
+		return metodoTarea();
+	}
+  //insertar getters y setters
+}
+
+public class Examen {
+
+	public static void main(String[] args) throws InterruptedException {
+		//Definim l'executor dels processos
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);
+		//Definim la llista dels alumnes
+	 	List<AlumneP> llistaAlumnes = new ArrayList<AlumneP>();
+	 	//Inicializar lista con bucle y aprovechando cosntructor...
+	 	//crear listas future
+	 	List <Future<Integer>> llistaResultats;
+	 	//igualar resultados a invokeAll()
+		llistaResultats = executor.invokeAll(llistaAlumnes);
+		//frena dejando terminar
+		executor.shutdown();
+	 	//puedes poner awaiTTermination para cortar por tiempo...
+		//Ensenyem els resultats
+    for (int i = 0; i < llistaResultats.size(); i++) {
+	 		Future<Integer> resultat = llistaResultats.get(i);
+	 		try {
+	 			System.out.println(llistaAlumnes.get(i).getNom() + ": " + resultat.get());
+	 			} catch (InterruptedException | ExecutionException e) {
+	 				e.getStackTrace();
+	 			}
+	 	}
+	}
+}
